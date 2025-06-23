@@ -13,12 +13,14 @@ typedef struct {
   int count;
   int capacity;
   uint8_t* code;
+  int* lines; // ith entry is line no. for code[i]
   ValueArray constants; // constant pool for the chunk
 } Chunk;
 
 void initChunk(Chunk* chunk);
 void freeChunk(Chunk* chunk);
-void writeChunk(Chunk* chunk, uint8_t byte);
+/// write `byte` of code (with `line` number in source code) to `chunk`
+void writeChunk(Chunk* chunk, uint8_t byte, int line);
 /// add constant `value` to `chunk`'s constant pool and return its index
 int addConstant(Chunk* chunk, Value value);
 
