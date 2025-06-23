@@ -27,9 +27,14 @@ static int simpleInstr(const char* name, int offset) {
   return offset + 1;
 }
 
-/// returns offset of beginning of next instruction
 int disassembleInstr(Chunk *chunk, int offset) {
-  printf("%04d ", offset);
+  printf("%04d ", offset); // format integer, width 4 (pad with 0s)
+  // if this instruction is on the same line as the previous one...
+  if (offset > 0 && chunk->lines[offset] == chunk->lines[offset - 1]){
+    printf("   | ");
+  } else {
+    printf("%4d ", chunk->lines[offset]); // format int, width 4 (pad with space)
+  }
 
   uint8_t instr = chunk->code[offset];
   switch (instr) {
