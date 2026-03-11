@@ -5,9 +5,17 @@
 
 typedef struct {
   Chunk* chunk; // bytecode to execute
+  uint8_t* ip; // next instr in the chunk to be executed
 } VM;
+
+typedef enum {
+  INTERPRET_OK,
+  INTERPRET_COMPILE_ERROR,
+  INTERPRET_RUNTIME_ERROR
+} InterpretResult;
 
 void initVM();
 void freeVM();
+InterpretResult interpret(Chunk* chunk);
 
 #endif
