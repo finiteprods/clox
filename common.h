@@ -5,4 +5,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#define DEBUG_TRACE_EXECUTION // flag to enable debug logging
+
 #endif

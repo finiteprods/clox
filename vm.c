@@ -1,6 +1,7 @@
 #include <stdio.h>
 
 #include "vm.h"
+#include "debug.h"
 
 // single global VM object (instead of passing pointer around)!
 VM vm;
@@ -16,6 +17,10 @@ static InterpretResult run() {
 #define READ_CONSTANT() (vm.chunk->constants.values[READ_BYTE()])
 
   for (;;) {
+#ifdef DEBUG_TRACE_EXECUTION
+    // NOTE conversion of ip from pointer to *relative* offset
+    disassembleInstr(vm.chunk, (int)(vm.ip - vm.chunk->code));
+#endif
     uint8_t instr;
     switch (instr = READ_BYTE()) {
       case OP_CONSTANT: {
