@@ -6,11 +6,29 @@
 // single global VM object (instead of passing pointer around)!
 VM vm;
 
-void initVM() {}
+static void resetStack() {
+  vm.stackTop = vm.stack;
+}
+
+void initVM() {
+  resetStack();
+}
 
 void freeVM() {}
 
-/// main decode-execute loop of vm
+// push *value* onto stack
+void push(Value value) {
+  *vm.stackTop = value;
+  vm.stackTop++;
+}
+
+// pop value off stack
+Value pop() {
+  vm.stackTop--;
+  return *vm.stackTop;
+}
+
+// main decode-execute loop of vm
 static InterpretResult run() {
 #define READ_BYTE() (*vm.ip++) // macro: read byte at ip (next instr's opcode), advance ip
 // read next byte as index into chunk's constant table
