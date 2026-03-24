@@ -36,6 +36,14 @@ static InterpretResult run() {
 
   for (;;) {
 #ifdef DEBUG_TRACE_EXECUTION
+    // print contents of stack
+    printf("          ");
+    for (Value *slot = vm.stack; slot < vm.stackTop; slot++) {
+      printf("[ ");
+      printValue(*slot);
+      printf(" ]");
+    }
+    printf("\n");
     // NOTE conversion of ip from pointer to *relative* offset
     disassembleInstr(vm.chunk, (int)(vm.ip - vm.chunk->code));
 #endif
@@ -43,11 +51,12 @@ static InterpretResult run() {
     switch (instr = READ_BYTE()) {
       case OP_CONSTANT: {
         Value constant = READ_CONSTANT();
-        printValue(constant);
-        printf("\n");
+        push(constant);
         break;
       }
       case OP_RETURN: {
+        printValue(pop());
+        printf("\n");
         return INTERPRET_OK;
       }
     }
