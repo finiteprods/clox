@@ -13,7 +13,7 @@ void disassembleChunk(Chunk *chunk, const char *name) {
   }
 }
 
-/// disassemble "load constant" instruction
+// disassemble "load constant" instruction
 static int constantInstr(const char* name, Chunk* chunk, int offset) {
   uint8_t constant = chunk->code[offset + 1];
   printf("%-16s %4d '", name, constant); // print opcode name, idx of constant
@@ -40,6 +40,8 @@ int disassembleInstr(Chunk *chunk, int offset) {
   switch (instr) {
     case OP_CONSTANT:
       return constantInstr("OP_CONSTANT", chunk, offset);
+    case OP_NEGATE:
+      return simpleInstr("OP_NEGATE", offset);
     case OP_RETURN:
       return simpleInstr("OP_RETURN", offset);
     default:
