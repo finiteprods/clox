@@ -1,6 +1,7 @@
 #include <stdio.h>
 
 #include "vm.h"
+#include "compiler.h"
 #include "debug.h"
 
 // single global VM object (instead of passing pointer around)!
@@ -80,8 +81,8 @@ static InterpretResult run() {
 #undef BINARY_OP
 }
 
-InterpretResult interpret(Chunk *chunk) {
-  vm.chunk = chunk; // store chunk in vm
-  vm.ip = vm.chunk->code; // "instr ptr" tracks where in bytecode
-  return run(); // run bytecode
+// scan -> compile -> execute given *source* code
+InterpretResult interpret(const char* source) {
+  compile(source);
+  return INTERPRET_OK;
 }
