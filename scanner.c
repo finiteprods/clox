@@ -34,6 +34,13 @@ static char peek() {
   return *scanner.current;
 }
 
+// returns next char w/o advancing "current" pointer
+static char peekNext() {
+  if (isAtEnd())
+    return '\0';
+  return scanner.current[1];
+}
+
 // return true and advance scanner if next char matches *expected*
 static bool match(char expected) {
   if (isAtEnd())
@@ -64,6 +71,7 @@ static Token errorToken(const char *msg) {
   return tok;
 }
 
+// skip past whitespace and comments
 static void skipWhitespace() {
   for (;;) {
     char c = peek();
@@ -76,6 +84,14 @@ static void skipWhitespace() {
     case '\n':
       scanner.line++;
       advance();
+      break;
+    case '/':
+      if (peekNext() == '/') {
+        // a comment goes until end of the line
+        while (peek() != '\n' && !isAtEnd())
+          advance();
+      } else
+        return;
       break;
     default:
       return;
