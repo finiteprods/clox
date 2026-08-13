@@ -19,6 +19,10 @@ void initScanner(const char *source) {
   scanner.line = 1;
 }
 
+static bool isDigit(char c) {
+  return c >= '0' && c <= '9';
+}
+
 // check whether at end of string i.e. current char is null byte
 static bool isAtEnd() {
   return *scanner.current == '\0';
@@ -99,6 +103,38 @@ static void skipWhitespace() {
   }
 }
 
+// scan (possibly fractional) number
+static Token number() {
+  while (isDigit(peek()))
+    advance();
+
+  // look for fractional part
+  if (peek() == '.' && isDigit(peekNext())) {
+    advance(); // consume the dot .
+    while (isDigit(peek()))
+      advance();
+  }
+
+  return makeToken(TOKEN_NUMBER);
+}
+
+// we've consumed a starting quote "
+// now consume chars up to the closing quote
+static Token string() {
+  while (peek() != '"' && !isAtEnd()) {
+    if (peek() == '\n') // clox strings can be multiline
+      scanner.line++;
+    advance();
+  }
+
+  if (isAtEnd())
+    return errorToken("Unterminated string.");
+
+  // next char is the closing quote "
+  advance();
+  return makeToken(TOKEN_STRING);
+}
+
 Token scanToken() {
   skipWhitespace();
   scanner.start = scanner.current;
@@ -106,6 +142,8 @@ Token scanToken() {
     return makeToken(TOKEN_EOF);
 
   char c = advance();
+  if (isDigit(c))
+    return number();
 
   switch (c) {
   case '(':
@@ -138,6 +176,8 @@ Token scanToken() {
     return makeToken(match('=') ? TOKEN_LESS_EQUAL : TOKEN_LESS);
   case '>':
     return makeToken(match('=') ? TOKEN_GREATER_EQUAL : TOKEN_GREATER);
+  case '"':
+    return string();
   }
 
   return errorToken("Unexpected character.");
