@@ -67,7 +67,7 @@ static InterpretResult run() {
       case OP_SUBTRACT: BINARY_OP(-); break;
       case OP_MULTIPLY: BINARY_OP(*); break;
       case OP_DIVIDE:   BINARY_OP(/); break;
-      case OP_NEGATE: push(-pop()); break;
+      case OP_NEGATE:   push(-pop()); break;
       case OP_RETURN: {
         printValue(pop());
         printf("\n");
@@ -83,6 +83,18 @@ static InterpretResult run() {
 
 // scan -> compile -> execute given *source* code
 InterpretResult interpret(const char* source) {
-  compile(source);
-  return INTERPRET_OK;
+  Chunk chunk;
+  initChunk(&chunk);
+
+  if (!compile(source, &chunk)) {
+    freeChunk(&chunk);
+    return INTERPRET_COMPILE_ERROR;
+  }
+
+  vm.chunk = &chunk;
+  vm.ip = vm.chunk->code;
+  InterpretResult result = run();
+
+  freeChunk(&chunk);
+  return result;
 }
